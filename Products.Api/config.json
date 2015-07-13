@@ -1,0 +1,10 @@
+{
+  "AppSettings": {
+    "SiteTitle": "Products.Admin"
+  },
+  "Data": {
+    "DefaultConnection": {
+      "ConnectionString": "Server=(localdb)\\mssqllocaldb;Database=ProductDatabase;Trusted_Connection=True;MultipleActiveResultSets=true"
+    }
+  }
+}
