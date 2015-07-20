@@ -19,8 +19,6 @@ namespace Products.Models
         [ScaffoldColumn(false)]
         public int ProductId { get; set; }
 
-        public int RecommendationId { get; set; }
-
         [Display(Name = "Category")]
         public int CategoryId { get; set; }
 
@@ -57,10 +55,6 @@ namespace Products.Models
         [Required]
         [Display(Name = "Product Details")]
         public string ProductDetails { get; set; }
-
-        public int Inventory { get; set; }
-
-        public int LeadTime { get; set; }
 
         public Dictionary<string, string> ProductDetailList
         {

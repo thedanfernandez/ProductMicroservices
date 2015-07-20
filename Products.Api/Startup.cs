@@ -15,11 +15,16 @@ namespace Products.Api
 {
     public class Startup
     {
+
+        public IConfiguration Configuration { get; private set; }
         public Startup(IHostingEnvironment env)
         {
-        }
 
-        public IConfiguration Configuration { get; set; }
+            //create configuration source 
+            Configuration = new Configuration()
+                .AddJsonFile("config.json")
+                .AddEnvironmentVariables(); 
+        }
 
         // This method gets called by a runtime.
         // Use this method to add services to the container
@@ -32,6 +37,9 @@ namespace Products.Api
             services.AddEntityFramework()
                 .AddSqlServer()
                 .AddDbContext<ProductsContext>(options => options.UseSqlServer(Configuration["Data:DefaultConnection:ConnectionString"]));
+                
+            services.AddTransient<ProductsContext>(t => t.GetService<ProductsContext>());
+            //services.AddTransient<IPartsUnlimitedContext>(s => s.GetService<PartsUnlimitedContext>());
 
 
 

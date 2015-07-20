@@ -13,6 +13,7 @@ namespace Products.Api.Controllers
     public class Products : Controller
     {
 
+        private int itemcount = 25; 
         private readonly IProductsContexts _context;
 
         public Products(IProductsContexts context)
@@ -20,68 +21,88 @@ namespace Products.Api.Controllers
             _context = context;
         }
 
-        // GET: api/values
+
         [HttpGet]
         public async Task<IEnumerable<Product>> Get()
         {
-            return await _context.Products.ToListAsync();
-
+            return await _context.Products
+                .Take(25).ToArrayAsync();
+     
         }
 
         // GET api/values/5
         [HttpGet("{id}")]
-        public async Task<Product> Get(int id)
+        public async Task<IActionResult> Get(int id)
         {
-            return await _context.Products
+            var result = await _context.Products
                 .Where(p => p.ProductId == id)
                 .FirstOrDefaultAsync();
+
+            if (result == null)
+            {
+                return HttpNotFound(); 
+            }
+            else
+            {
+                return new JsonResult(result); 
+            }
+
         }
 
-        // POST api/values
-        [HttpPost]
-        public void Post([FromBody]string value)
+        public async Task<IEnumerable<Category>> GetCategories()
         {
+            return await _context.Categories
+                .Take(itemcount)
+                .ToArrayAsync();
         }
 
-        // PUT api/values/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody]string value)
+        public async Task<IActionResult> GetProductsByCategory(int categoryID)
         {
+            var result = await _context.Products
+                .Take(itemcount)
+                .Where(p => p.CategoryId == categoryID)
+                .ToListAsync();
+
+            if (result == null)
+            {
+                return HttpNotFound(); 
+            }
+            else
+            {
+                return new JsonResult(result); 
+            }
+
         }
 
-        // DELETE api/values/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
+        public async Task<IActionResult> GetNewProducts(int count)
         {
-            //TODO: Fix
-        }
+            if (count < 0)
+            {
+                return HttpBadRequest(); 
+            }
+            else if (count > 50)
+            {
+                count = 50; 
+            }
 
-        public static IEnumerable<Category> GetCategories()
-        {
-            //TODO: Replace with 
-            yield return new Category { Name = "Brakes", Description = "Brakes description", ImageUrl = "product_brakes_disc.jpg" };
-            yield return new Category { Name = "Lighting", Description = "Lighting description", ImageUrl = "product_lighting_headlight.jpg" };
-            yield return new Category { Name = "Wheels & Tires", Description = "Wheels & Tires description", ImageUrl = "product_wheel_rim.jpg" };
-            yield return new Category { Name = "Batteries", Description = "Batteries description", ImageUrl = "product_batteries_basic-battery.jpg" };
-            yield return new Category { Name = "Oil", Description = "Oil description", ImageUrl = "product_oil_premium-oil.jpg" };
-        }
-
-        public async Task<List<Product>> GetNewProducts(int count)
-        {
-            return await _context.Products
+            var result = await _context.Products
                 .OrderByDescending(a => a.Created)
                 .Take(count)
-                .ToListAsync();
+                .ToArrayAsync();
+
+            return new JsonResult(result); 
         }
 
-        public async Task<IEnumerable<Product>> Search(string query)
+        public async Task<IActionResult> Search(string query)
         {
             var lowercase_query = query.ToLower();
 
-            var q = _context.Products
-                .Where(p => p.Title.ToLower().Contains(lowercase_query));
+            var result = await _context.Products
+                .Where(p => p.Title.ToLower().Contains(lowercase_query))
+                .Take(itemcount)
+                .ToArrayAsync();
 
-            return await q.ToListAsync();
+            return new JsonResult(result); 
         }
 
 

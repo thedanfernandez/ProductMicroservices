@@ -22,6 +22,7 @@ namespace Products.Models
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
+            
             optionsBuilder.UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=ProductDatabase;Trusted_Connection=True;MultipleActiveResultSets=true");
             base.OnConfiguring(optionsBuilder);
         }
